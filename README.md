@@ -1,3 +1,3 @@
 # Mesto-project
 
-Mesto project using JavaScript ES6 classe
+Mesto project using JavaScript ES6 classes
