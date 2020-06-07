@@ -1,28 +1,39 @@
 class Card {
-  constructor(imagePopup) {
+  constructor(imagePopup, api) {
     this._imagePopup = imagePopup;
+    this._api = api;
+    this._cardsId = [];
 
-    this._like = this._like.bind(this);
+    this._likeHandler = this._likeHandler.bind(this);
     this._remove = this._remove.bind(this);
   }
 
-  create(title, link) {
+  create(title, link, cardId, likesCount, isOwn, isLiked) {
     const newCard = `
     <div class="place-card">
         <div class="place-card__image">
-            <button class="place-card__delete-icon"></button>
+          
         </div>
         <div class="place-card__description">
             <h3 class="place-card__name"></h3>
-            <button class="place-card__like-icon"></button>
+            <div class="place-card__likes-container">
+              <button class="place-card__like-icon"></button>
+              <p class="place-card__like-count">0</p>
+            </div>
         </div>
     </div>`;
+    const deleteButtonElement = '<button class="place-card__delete-icon"></button>';
+
     const bufferElement = document.createElement('div');
     bufferElement.insertAdjacentHTML('afterbegin', newCard);
     bufferElement.firstElementChild.querySelector('.place-card__image').style.backgroundImage = `url(${link})`;
     bufferElement.firstElementChild.querySelector('.place-card__name').textContent = title;
 
     this.placeCard = bufferElement.firstElementChild;
+    this.placeCard.id = cardId;
+    isOwn ? this.placeCard.querySelector('.place-card__image').insertAdjacentHTML('afterbegin', deleteButtonElement) : 0;
+    isLiked ? this._like(this.placeCard) : 0;
+    this.placeCard.querySelector('.place-card__like-count').textContent = likesCount;
 
     this._likeIconElement = this.placeCard.querySelector('.place-card__like-icon');
     this._deleteIconElement = this.placeCard.querySelector('.place-card__delete-icon');
@@ -33,24 +44,42 @@ class Card {
     return this.placeCard;
   }
 
-  _like(event) {
-    event.target.classList.toggle('place-card__like-icon_liked');
+  _likeHandler(event) {
+    const currentCard = event.target.closest('.place-card');
+    if (event.target.classList.contains('place-card__like-icon_liked')) { 
+      this._api.deleteLike(currentCard.id).then((responseData) => {
+        currentCard.querySelector('.place-card__like-count').textContent = responseData.likes.length;
+      })
+    } else {
+      this._api.addLike(currentCard.id).then((responseData) => {
+        currentCard.querySelector('.place-card__like-count').textContent = responseData.likes.length;
+      })
+    }
+    this._like(currentCard);
+  }
+
+  _like(currentCard) {
+    currentCard.querySelector('.place-card__like-icon').classList.toggle('place-card__like-icon_liked');
   }
 
   _remove(event) {
-    event.target.closest('.place-card').remove();
-    this._removeEventListeners();
+    if(window.confirm('Вы действительно хотите удалить карточку?')) {
+      event.target.closest('.place-card').remove();
+      this._removeEventListeners(event.target.closest('.place-card'));
+      
+      this._api.deleteCard(event.target.closest('.place-card').id);
+    }
   }
 
   _setEventListeners() {
-    this._likeIconElement.addEventListener('click', this._like);
-    this._deleteIconElement.addEventListener('click', this._remove);
+    this._likeIconElement.addEventListener('click', this._likeHandler);
+    this._deleteIconElement !== null ? this._deleteIconElement.addEventListener('click', this._remove) : 0;
     this._cardImageElement.addEventListener('click', this._imagePopup.setNewPopupImage);
   }
 
-  _removeEventListeners() {
-    this.placeCard.querySelector('.place-card__like-icon').removeEventListener('click', this._like);
-    this.placeCard.querySelector('.place-card__delete-icon').removeEventListener('click', this._remove);
-    this.placeCard.querySelector('.place-card__image').removeEventListener('click', this._imagePopup.setNewPopupImage);
+  _removeEventListeners(currentCardElement) {
+    currentCardElement.querySelector('.place-card__like-icon').removeEventListener('click', this._likeHandler);
+    currentCardElement.querySelector('.place-card__delete-icon').removeEventListener('click', this._remove);
+    currentCardElement.querySelector('.place-card__image').removeEventListener('click', this._imagePopup.setNewPopupImage);
   }
 }
