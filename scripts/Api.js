@@ -5,13 +5,22 @@ class Api {
     this._serverUrlCards = `${serverUrl}/cards`;
     this._serverUrlCardsLike = `${this._serverUrlCards}/like`;
     this._apiHeaders = apiHeaders;
-
-    this.getUserInfo().then((responseData) => this.myId = responseData._id);
   }
 
   _responseValidation(response) {
     return response.ok ? response.json() : Promise.reject(response.status);
   }
+
+  // async getUserInfo() {
+  //   const fetchResponse = await fetch(`${this._serverUrlUserInfo}`, {
+  //       headers: this._apiHeaders,
+  //   });
+  //   if(fetchResponse.ok) {
+  //     return await fetchResponse.json();
+  //   } else {
+  //     throw fetchResponse.status;
+  //   }
+  // }
 
   getUserInfo() {
     return fetch(`${this._serverUrlUserInfo}`, {
@@ -21,8 +30,7 @@ class Api {
     .then((responseData) => {
       console.log(responseData);
       return responseData;
-    })
-    .catch((error) => console.log(`Ошибка: ${error}`));
+    });
   }
 
   updateUserInfo(newNameInfo, newAboutInfo) {
@@ -38,8 +46,7 @@ class Api {
     .then((responseData) => {
       console.log(responseData);
       return responseData;
-    })
-    .catch((error) => console.log(`Ошибка: ${error}`));
+    });
   }
 
   getInitialCards() {
@@ -50,8 +57,7 @@ class Api {
     .then((responseData) => {
       console.log(responseData);
       return responseData;
-    })
-    .catch((error) => console.log(`Ошибка: ${error}`))
+    });
   }
 
   addCard(cardName, cardLink) {
@@ -67,18 +73,16 @@ class Api {
     .then((responseData) => {
       console.log(responseData);
       return responseData;
-    })
-    .catch((error) => console.log(`Ошибка: ${error}`))
+    });
   }
 
   deleteCard(cardId) {
-    fetch(this._serverUrlCards + '/' + cardId, {
+    return fetch(this._serverUrlCards + '/' + cardId, {
       method: 'DELETE',
       headers: this._apiHeaders,
     })
     .then((response) => this._responseValidation(response))
     .then((responseData) => console.log(responseData))
-    .catch((error) => console.log(`Ошибка: ${error}`));
   }
 
   addLike(cardId) {
@@ -91,7 +95,6 @@ class Api {
       console.log(responseData);
       return responseData;
     })
-    .catch((error) => console.log(`Ошибка: ${error}`));
   }
 
   deleteLike(cardId) {
@@ -104,7 +107,6 @@ class Api {
       console.log(responseData);
       return responseData;
     })
-    .catch((error) => console.log(`Ошибка: ${error}`));
   }
 
   updateUserAvatar(avatarUrl) {
@@ -120,6 +122,5 @@ class Api {
       console.log(responseData);
       return responseData;
     })
-    .catch((error) => console.log(`Ошибка: ${error}`));
   }
 }

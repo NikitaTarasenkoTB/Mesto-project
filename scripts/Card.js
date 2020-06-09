@@ -44,18 +44,27 @@ class Card {
     return this.placeCard;
   }
 
+  _errorHandler(error) {
+    console.log(error);
+  }
+
   _likeHandler(event) {
     const currentCard = event.target.closest('.place-card');
     if (event.target.classList.contains('place-card__like-icon_liked')) { 
-      this._api.deleteLike(currentCard.id).then((responseData) => {
+      this._api.deleteLike(currentCard.id)
+      .then((responseData) => {
         currentCard.querySelector('.place-card__like-count').textContent = responseData.likes.length;
+        this._like(currentCard);
       })
+      .catch((error) => this._errorHandler(error));
     } else {
-      this._api.addLike(currentCard.id).then((responseData) => {
+      this._api.addLike(currentCard.id)
+      .then((responseData) => {
         currentCard.querySelector('.place-card__like-count').textContent = responseData.likes.length;
+        this._like(currentCard);
       })
+      .catch((error) => this._errorHandler(error));
     }
-    this._like(currentCard);
   }
 
   _like(currentCard) {
@@ -63,11 +72,13 @@ class Card {
   }
 
   _remove(event) {
-    if(window.confirm('Вы действительно хотите удалить карточку?')) {
-      event.target.closest('.place-card').remove();
-      this._removeEventListeners(event.target.closest('.place-card'));
-      
-      this._api.deleteCard(event.target.closest('.place-card').id);
+    if(window.confirm('Вы действительно хотите удалить карточку?')) {   
+      this._api.deleteCard(event.target.closest('.place-card').id)
+      .then(() => {
+        event.target.closest('.place-card').remove();
+        this._removeEventListeners(event.target.closest('.place-card'));
+      })
+      .catch((error) => this._errorHandler(error));
     }
   }
 

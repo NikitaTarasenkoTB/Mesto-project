@@ -17,9 +17,11 @@ const apiHeaders = {
 const api = new Api(serverUrl, apiHeaders);
 
 const imagePopup = new ImagePopup(popupImage, closeButtonImage);
-const card = new Card(imagePopup, api);
-const cardList = new CardList(placesList, card, api);
 const userInfo = new UserInfo(userNameElement, userAboutElement, userAvatarElement, api);
+userInfo.setInitialUserInfo();
+const card = new Card(imagePopup, api);
+const cardList = new CardList(placesList, card, userInfo, api);
+cardList.render();
 const formValidator = new FormValidator();
 
 new AddFormPopup(popupAdd, addButton, closeButton, formValidator, api, cardList, card);

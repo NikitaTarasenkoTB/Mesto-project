@@ -7,6 +7,10 @@ class AvatarFormPopup extends FormPopup {
     this._setEventListeners();
   }
 
+  _errorHandler(error) {
+    console.log(error);
+  }
+
   _open() {
     super._open();
     this._formValidator.setSubmitButtonState(this._currentForm, false);
@@ -15,14 +19,16 @@ class AvatarFormPopup extends FormPopup {
   _avatarFormHandler(event) {
     event.preventDefault();
     const avatarUrl = this._currentForm.elements.avatarLink.value;
-    this._userInfo.setUserAvatar(avatarUrl);
+
 
     this._loadingButtonState()
     this._api.updateUserAvatar(avatarUrl)
-    .finally(() => {
+    .then(() => {
+      this._userInfo.setUserAvatar(avatarUrl);
       this._close();
       this._loadedButtonState();
-    });
+    })
+    .catch((error) => this._errorHandler(error));
   }
 
   _setEventListeners() {

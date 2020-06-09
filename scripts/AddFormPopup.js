@@ -25,6 +25,10 @@ class AddFormPopup extends FormPopup {
     this._currentForm.querySelector('.popup__button-save-text').style.fontSize = '36px';
   }
 
+  _errorHandler(error) {
+    console.log(error);
+  }
+
   _addFormHandler(event) {
     event.preventDefault();
 
@@ -36,11 +40,10 @@ class AddFormPopup extends FormPopup {
     this._api.addCard(title, link)
     .then((responseData) => {
       this._cardList.addCard(this._card.create(title, link, responseData._id, 0, true));
-    })
-    .finally(() => {
       this._close();
       this._loadedButtonState();
     })
+    .catch((error) => this._errorHandler(error));
   }
 
   _setEventListeners() {
