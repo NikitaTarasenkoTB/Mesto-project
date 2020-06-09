@@ -30,9 +30,9 @@ class EditFormPopup extends FormPopup {
     .then(() => {
       this._userInfo.updateUserInfo();
       this._close();
-      this._loadedButtonState();
     })
-    .catch((error) => this._errorHandler(error));
+    .catch((error) => this._errorHandler(error))
+    .finally(() => this._loadedButtonState());
   }
 
   _setEventListeners() {

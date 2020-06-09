@@ -41,9 +41,9 @@ class AddFormPopup extends FormPopup {
     .then((responseData) => {
       this._cardList.addCard(this._card.create(title, link, responseData._id, 0, true));
       this._close();
-      this._loadedButtonState();
     })
-    .catch((error) => this._errorHandler(error));
+    .catch((error) => this._errorHandler(error))
+    .finally(() => this._loadedButtonState());
   }
 
   _setEventListeners() {

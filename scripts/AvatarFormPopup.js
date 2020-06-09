@@ -26,9 +26,9 @@ class AvatarFormPopup extends FormPopup {
     .then(() => {
       this._userInfo.setUserAvatar(avatarUrl);
       this._close();
-      this._loadedButtonState();
     })
-    .catch((error) => this._errorHandler(error));
+    .catch((error) => this._errorHandler(error))
+    .finally(() => this._loadedButtonState());
   }
 
   _setEventListeners() {
